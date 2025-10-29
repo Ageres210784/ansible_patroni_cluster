@@ -1,10 +1,9 @@
 ---
 - name: Start docker patroni container
-  community.docker.docker_compose:
+  community.docker.docker_compose_v2:
     state: present
     project_name: patroni_cluster
     definition:
-      version: '2'
       services:
         patroni:
           image: "{{ patroni_image }}:{{ patroni_image_version }}"
@@ -16,8 +15,6 @@
             TZ: "{{ cluster_timezone }}"
             PATRONI_NAME: "{{ patroni_name }}"
             PATRONI_POSTGRESQL_DATA_DIR: /patroni_db/postgresql/data
-            PATRONI_CONSUL_HOST: "http://{{ consul_container_name }}:8500"
-            PATRONI_CONSUL_URL: "http://{{ consul_container_name }}:8500/v1/"
           restart: always
           labels: "{{ patroni_docker_labels }}"
           volumes:

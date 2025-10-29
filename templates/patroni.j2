@@ -4,6 +4,11 @@ restapi:
     listen: {{ patroni_listen_address }}:{{ patroni_listen_port }}
     connect_address: {{ cluster_host_ip }}:{{ patroni_connect_port }}
 
+consul:
+    host: {{ consul_container_name }}
+    port: 8500
+    protocol: http
+
 bootstrap:
     {{ dsc_config|indent(4) }}
 
