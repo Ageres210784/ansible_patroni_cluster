@@ -7,6 +7,7 @@
     name: postgres
     comment: user for postgres
     uid: "{{ postgres_user_uid }}"
+  when: patroni_manage_os_user | bool
 
 - name: Ensure database dir
   become: yes
@@ -14,8 +15,8 @@
   file:
     path: "{{ cluster_database_dir }}"
     state: directory
-    mode: 0755
-    owner: postgres
+    mode: "0755"
+    owner: "{{ patroni_docker_uid }}"
     group: root
 
 - name: Ensure config dir
@@ -24,7 +25,7 @@
   file:
     path: "{{ patroni_config_dir }}"
     state: directory
-    mode: 0755
+    mode: "0755"
     owner: root
     group: root
 
@@ -32,8 +33,8 @@
   template:
     src: "patroni.j2"
     dest: "{{ patroni_config_dir }}/patroni.yml"
-    mode: "600"
-    owner: postgres
+    mode: "0644"
+    owner: "{{ patroni_docker_uid }}"
 
 - name: Include docker-related patroni tasks
   include_tasks: run_patroni_in_docker.yml

@@ -11,12 +11,20 @@
           container_name: "{{ patroni_container_name }}"
           user: postgres
           ports: "{{ patroni_expose_ports }}"
-          environment:
-            TZ: "{{ cluster_timezone }}"
-            PATRONI_NAME: "{{ patroni_name }}"
-            PATRONI_POSTGRESQL_DATA_DIR: /patroni_db/postgresql/data
+          environment: >-
+            {{
+              {
+                'TZ': cluster_timezone,
+                'PATRONI_NAME': patroni_name,
+                'PATRONI_POSTGRESQL_DATA_DIR': postgres_data_dir
+              } | combine(patroni_extra_env)
+            }}
           restart: always
           labels: "{{ patroni_docker_labels }}"
-          volumes:
-            - "{{ cluster_database_dir }}:/patroni_db/"
-            - "{{ patroni_config_dir }}/patroni.yml:/patroni.yml"
+          volumes: >-
+            {{
+              [
+                cluster_database_dir + ':/var/lib/postgresql',
+                patroni_config_dir + '/patroni.yml:/patroni.yml'
+              ] + patroni_extra_volumes
+            }}
